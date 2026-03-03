@@ -1,0 +1,10 @@
+.stApp {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stButton > button {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    color: white;
+    border: none;
+    border-radius: 50px;
+}
