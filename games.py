@@ -26,12 +26,10 @@ class JuegoMatematicas:
             }
         
         # Generar primera pregunta
-        if st.session_state.math_estado['num1'] is None:
-            self.generar_pregunta()
+        self.generar_pregunta()
     
     def generar_pregunta(self):
         """Genera una nueva pregunta"""
-        # Elegir operador
         operador = random.choice(['+', '-', '×'])
         
         if operador == '+':
@@ -42,7 +40,7 @@ class JuegoMatematicas:
             num1 = random.randint(5, 20)
             num2 = random.randint(1, num1)
             resultado = num1 - num2
-        else:  # ×
+        else:
             num1 = random.randint(2, 10)
             num2 = random.randint(2, 10)
             resultado = num1 * num2
@@ -56,7 +54,6 @@ class JuegoMatematicas:
         
         random.shuffle(opciones)
         
-        # Actualizar estado
         st.session_state.math_estado = {
             'num1': num1,
             'num2': num2,
@@ -68,10 +65,6 @@ class JuegoMatematicas:
         }
     
     def jugar(self):
-        st.markdown("## 🧮 Matemáticas Rápidas")
-        st.caption("Pon a prueba tu agilidad mental")
-        
-        # Mostrar estadísticas
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos en partida", st.session_state.math_puntos)
@@ -82,21 +75,18 @@ class JuegoMatematicas:
         with col3:
             st.metric("Preguntas", st.session_state.math_preguntas)
         
-        # Mostrar mensaje si existe
         if st.session_state.math_estado['mensaje']:
             if "✅" in st.session_state.math_estado['mensaje']:
                 st.success(st.session_state.math_estado['mensaje'])
             else:
                 st.error(st.session_state.math_estado['mensaje'])
         
-        # Mostrar la pregunta
         num1 = st.session_state.math_estado['num1']
         num2 = st.session_state.math_estado['num2']
         operador = st.session_state.math_estado['operador']
         
         st.markdown(f"## **{num1} {operador} {num2} = ?**")
         
-        # Mostrar opciones
         col1, col2 = st.columns(2)
         opciones = st.session_state.math_estado['opciones']
         respondido = st.session_state.math_estado['respondido']
@@ -115,7 +105,6 @@ class JuegoMatematicas:
             if st.button(f"**{opciones[3]}**", key="math_4", use_container_width=True, disabled=respondido):
                 self.verificar_respuesta(opciones[3])
         
-        # Botón siguiente pregunta
         if st.session_state.math_estado['respondido']:
             if st.button("➡️ Siguiente Pregunta", key="math_next", use_container_width=True):
                 self.generar_pregunta()
@@ -124,7 +113,6 @@ class JuegoMatematicas:
         return st.session_state.math_puntos
     
     def verificar_respuesta(self, respuesta):
-        """Verifica si la respuesta es correcta"""
         st.session_state.math_preguntas += 1
         
         if respuesta == st.session_state.math_estado['resultado']:
@@ -189,11 +177,15 @@ class JuegoEspanol:
                 'pregunta': '¿Cuál es el antónimo de "rápido"?',
                 'opciones': ['Lento', 'Veloz', 'Ágil', 'Raudo'],
                 'correcta': 'Lento'
+            },
+            {
+                'pregunta': '¿Qué palabra es un adjetivo?',
+                'opciones': ['Hermoso', 'Correr', 'Casa', 'Rápidamente'],
+                'correcta': 'Hermoso'
             }
         ]
         
-        if st.session_state.esp_estado['pregunta'] is None:
-            self.generar_pregunta()
+        self.generar_pregunta()
     
     def generar_pregunta(self):
         pregunta = random.choice(self.preguntas)
@@ -206,9 +198,6 @@ class JuegoEspanol:
         }
     
     def jugar(self):
-        st.markdown("## 📚 Español")
-        st.caption("Pon a prueba tu conocimiento del idioma")
-        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.esp_puntos)
@@ -302,11 +291,13 @@ class JuegoGeografia:
             'China': 'Pekín',
             'India': 'Nueva Delhi',
             'Canadá': 'Ottawa',
-            'Argentina': 'Buenos Aires'
+            'Argentina': 'Buenos Aires',
+            'Colombia': 'Bogotá',
+            'Perú': 'Lima',
+            'Chile': 'Santiago'
         }
         
-        if st.session_state.geo_estado['pais'] is None:
-            self.generar_pregunta()
+        self.generar_pregunta()
     
     def generar_pregunta(self):
         pais = random.choice(list(self.capitales.keys()))
@@ -325,9 +316,6 @@ class JuegoGeografia:
         }
     
     def jugar(self):
-        st.markdown("## 🌍 Geografía")
-        st.caption("Adivina las capitales del mundo")
-        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.geo_puntos)
@@ -438,7 +426,7 @@ class JuegoHistoria:
                 'correcta': 'Azteca'
             },
             {
-                'pregunta': '¿En qué año se firmó la Declaración de Independencia de México?',
+                'pregunta': '¿En qué año se firmó la Independencia de México?',
                 'opciones': ['1821', '1810', '1824', '1857'],
                 'correcta': '1821'
             },
@@ -463,7 +451,7 @@ class JuegoHistoria:
                 'correcta': 'Leonardo da Vinci'
             },
             {
-                'pregunta': '¿Qué antigua civilización es conocida por sus pirámides?',
+                'pregunta': '¿Qué antigua civilización construyó las pirámides?',
                 'opciones': ['Egipcia', 'Romana', 'Griega', 'Persa'],
                 'correcta': 'Egipcia'
             },
@@ -478,14 +466,13 @@ class JuegoHistoria:
                 'correcta': '1989'
             },
             {
-                'pregunta': '¿Quién fue conocido como el "Padre de la Patria" en México?',
+                'pregunta': '¿Quién fue el "Padre de la Patria" en México?',
                 'opciones': ['Miguel Hidalgo', 'José María Morelos', 'Vicente Guerrero', 'Agustín de Iturbide'],
                 'correcta': 'Miguel Hidalgo'
             }
         ]
         
-        if st.session_state.hist_estado['pregunta'] is None:
-            self.generar_pregunta()
+        self.generar_pregunta()
     
     def generar_pregunta(self):
         pregunta = random.choice(self.preguntas)
@@ -498,9 +485,6 @@ class JuegoHistoria:
         }
     
     def jugar(self):
-        st.markdown("## 📜 Historia Universal")
-        st.caption("Viaja a través del tiempo y aprende historia")
-        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.hist_puntos)
@@ -609,11 +593,15 @@ class JuegoFilosofia:
                 'pregunta': '¿Qué corriente filosófica fundó Epicuro?',
                 'opciones': ['Epicureísmo', 'Estoicismo', 'Cinicismo', 'Escepticismo'],
                 'correcta': 'Epicureísmo'
+            },
+            {
+                'pregunta': '¿Qué es el "imperativo categórico" en Kant?',
+                'opciones': ['Regla moral universal', 'Ley física', 'Tipo de gobierno', 'Teoría del conocimiento'],
+                'correcta': 'Regla moral universal'
             }
         ]
         
-        if st.session_state.fil_estado['pregunta'] is None:
-            self.generar_pregunta()
+        self.generar_pregunta()
     
     def generar_pregunta(self):
         pregunta = random.choice(self.preguntas)
@@ -626,9 +614,6 @@ class JuegoFilosofia:
         }
     
     def jugar(self):
-        st.markdown("## 🤔 Filosofía")
-        st.caption("Explora el mundo de las ideas")
-        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.fil_puntos)
