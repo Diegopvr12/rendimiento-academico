@@ -1,5 +1,10 @@
 """Manejo de base de datos para EduPlay"""
-from helpers import cargar_usuarios, guardar_usuarios, crear_usuario_si_no_existe, verificar_logros
+from helpers import (
+    cargar_usuarios, 
+    guardar_usuarios, 
+    crear_usuario_si_no_existe, 
+    verificar_logros
+)
 from datetime import datetime
 
 class Database:
@@ -12,23 +17,46 @@ class Database:
     
     def actualizar_puntos(self, usuario, puntos, juego):
         """Actualiza puntos de un usuario"""
-        if usuario in self.usuarios:
-            user = self.usuarios[usuario]
-            user['puntos'] += puntos
-            user['juegos_completados'] += 1
-            
-            user['historial'].append({
-                'fecha': datetime.now().strftime('%Y-%m-%d %H:%M'),
-                'juego': juego,
-                'puntos': puntos
-            })
-            
-            nuevos = verificar_logros(usuario, user)
-            user['nivel'] = user['puntos'] // 100 + 1
-            
-            guardar_usuarios(self.usuarios)
-            return True, nuevos
-        return False, []
+        if usuario not in self.usuarios:
+            return False, []
+        
+        user = self.usuarios[usuario]
+        user['puntos'] += puntos
+        user['juegos_completados'] += 1
+        
+        # Actualizar estadísticas por juego
+        if juego.lower() in user['estadisticas']:
+            user['estadisticas'][juego.lower()] += 1
+        elif juego == "Matemáticas":
+            user['estadisticas']['matematicas'] += 1
+        elif juego == "Español":
+            user['estadisticas']['espanol'] += 1
+        elif juego == "Geografía":
+            user['estadisticas']['geografia'] += 1
+        elif juego == "Filosofía":
+            user['estadisticas']['filosofia'] += 1
+        
+        # Registrar en historial
+        user['historial'].append({
+            'fecha': datetime.now().strftime('%Y-%m-%d %H:%M'),
+            'juego': juego,
+            'puntos': puntos
+        })
+        
+        # Mantener solo últimos 50 registros
+        if len(user['historial']) > 50:
+            user['historial'] = user['historial'][-50:]
+        
+        # Verificar logros
+        nuevos_logros = verificar_logros(usuario, user)
+        
+        # Actualizar nivel
+        user['nivel'] = user['puntos'] // 100 + 1
+        
+        # Guardar cambios
+        guardar_usuarios(self.usuarios)
+        
+        return True, nuevos_logros
     
     def obtener_ranking(self):
         """Obtiene ranking de usuarios"""
