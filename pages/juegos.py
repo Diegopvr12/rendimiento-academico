@@ -1,5 +1,11 @@
 import streamlit as st
-from games import JuegoMatematicas, JuegoEspanol, JuegoGeografia, JuegoHistoria, JuegoFilosofia
+from games import (
+    JuegoMatematicas, 
+    JuegoEspanol, 
+    JuegoGeografia, 
+    JuegoHistoria, 
+    JuegoFilosofia
+)
 from database import Database
 
 db = Database()
@@ -12,24 +18,33 @@ def show():
         return
     
     # Crear pestañas para cada juego
-    tabs = st.tabs(["🧮 Matemáticas", "📚 Español", "🌍 Geografía", "📜 Historia", "🤔 Filosofía"])
+    tabs = st.tabs([
+        "🧮 Matemáticas", 
+        "📚 Español", 
+        "🌍 Geografía", 
+        "📜 Historia", 
+        "🤔 Filosofía"
+    ])
     
-    # Pestaña de Matemáticas
+    # ===== MATEMÁTICAS =====
     with tabs[0]:
+        st.markdown("### 🧮 Matemáticas Rápidas")
+        st.caption("Pon a prueba tu agilidad mental con operaciones básicas")
+        
         juego = JuegoMatematicas()
         puntos = juego.jugar()
         
         if puntos > 0:
-            col1, col2 = st.columns([1, 3])
+            col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
-                if st.button("💰 Guardar puntos", key="save_math"):
+                if st.button("💰 Guardar puntos", key="save_math", use_container_width=True):
                     exito, nuevos = db.actualizar_puntos(
                         st.session_state.usuario_actual, 
                         puntos, 
                         "Matemáticas"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -37,22 +52,25 @@ def show():
                         st.session_state.math_puntos = 0
                         st.rerun()
     
-    # Pestaña de Español
+    # ===== ESPAÑOL =====
     with tabs[1]:
+        st.markdown("### 📚 Español")
+        st.caption("Pon a prueba tu conocimiento del idioma")
+        
         juego = JuegoEspanol()
         puntos = juego.jugar()
         
         if puntos > 0:
-            col1, col2 = st.columns([1, 3])
+            col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
-                if st.button("💰 Guardar puntos", key="save_esp"):
+                if st.button("💰 Guardar puntos", key="save_esp", use_container_width=True):
                     exito, nuevos = db.actualizar_puntos(
                         st.session_state.usuario_actual, 
                         puntos, 
                         "Español"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -60,22 +78,25 @@ def show():
                         st.session_state.esp_puntos = 0
                         st.rerun()
     
-    # Pestaña de Geografía
+    # ===== GEOGRAFÍA =====
     with tabs[2]:
+        st.markdown("### 🌍 Geografía")
+        st.caption("Adivina las capitales del mundo")
+        
         juego = JuegoGeografia()
         puntos = juego.jugar()
         
         if puntos > 0:
-            col1, col2 = st.columns([1, 3])
+            col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
-                if st.button("💰 Guardar puntos", key="save_geo"):
+                if st.button("💰 Guardar puntos", key="save_geo", use_container_width=True):
                     exito, nuevos = db.actualizar_puntos(
                         st.session_state.usuario_actual, 
                         puntos, 
                         "Geografía"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -83,22 +104,25 @@ def show():
                         st.session_state.geo_puntos = 0
                         st.rerun()
     
-    # Pestaña de Historia
+    # ===== HISTORIA =====
     with tabs[3]:
+        st.markdown("### 📜 Historia")
+        st.caption("Viaja a través del tiempo y aprende historia")
+        
         juego = JuegoHistoria()
         puntos = juego.jugar()
         
         if puntos > 0:
-            col1, col2 = st.columns([1, 3])
+            col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
-                if st.button("💰 Guardar puntos", key="save_hist"):
+                if st.button("💰 Guardar puntos", key="save_hist", use_container_width=True):
                     exito, nuevos = db.actualizar_puntos(
                         st.session_state.usuario_actual, 
                         puntos, 
                         "Historia"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -106,22 +130,25 @@ def show():
                         st.session_state.hist_puntos = 0
                         st.rerun()
     
-    # Pestaña de Filosofía
+    # ===== FILOSOFÍA =====
     with tabs[4]:
+        st.markdown("### 🤔 Filosofía")
+        st.caption("Explora el mundo de las ideas")
+        
         juego = JuegoFilosofia()
         puntos = juego.jugar()
         
         if puntos > 0:
-            col1, col2 = st.columns([1, 3])
+            col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
-                if st.button("💰 Guardar puntos", key="save_fil"):
+                if st.button("💰 Guardar puntos", key="save_fil", use_container_width=True):
                     exito, nuevos = db.actualizar_puntos(
                         st.session_state.usuario_actual, 
                         puntos, 
                         "Filosofía"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
