@@ -1,5 +1,5 @@
 import streamlit as st
-from games import JuegoMatematicas, JuegoEspanol, JuegoGeografia, JuegoFilosofia
+from games import JuegoMatematicas, JuegoEspanol, JuegoGeografia, JuegoHistoria, JuegoFilosofia
 from database import Database
 
 db = Database()
@@ -12,7 +12,7 @@ def show():
         return
     
     # Crear pestañas para cada juego
-    tabs = st.tabs(["🧮 Matemáticas", "📚 Español", "🌍 Geografía", "🤔 Filosofía"])
+    tabs = st.tabs(["🧮 Matemáticas", "📚 Español", "🌍 Geografía", "📜 Historia", "🤔 Filosofía"])
     
     # Pestaña de Matemáticas
     with tabs[0]:
@@ -29,7 +29,7 @@ def show():
                         "Matemáticas"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -52,7 +52,7 @@ def show():
                         "Español"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -75,7 +75,7 @@ def show():
                         "Geografía"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
@@ -83,8 +83,31 @@ def show():
                         st.session_state.geo_puntos = 0
                         st.rerun()
     
-    # Pestaña de Filosofía
+    # Pestaña de Historia
     with tabs[3]:
+        juego = JuegoHistoria()
+        puntos = juego.jugar()
+        
+        if puntos > 0:
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                if st.button("💰 Guardar puntos", key="save_hist"):
+                    exito, nuevos = db.actualizar_puntos(
+                        st.session_state.usuario_actual, 
+                        puntos, 
+                        "Historia"
+                    )
+                    if exito:
+                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
+                        if nuevos:
+                            for logro in nuevos:
+                                st.balloons()
+                                st.info(f"🏆 {logro}")
+                        st.session_state.hist_puntos = 0
+                        st.rerun()
+    
+    # Pestaña de Filosofía
+    with tabs[4]:
         juego = JuegoFilosofia()
         puntos = juego.jugar()
         
@@ -98,7 +121,7 @@ def show():
                         "Filosofía"
                     )
                     if exito:
-                        st.success(f"🎉 ¡{puntos} puntos guardados!")
+                        st.success(f"🎉 ¡{puntos} puntos guardados en tu cuenta!")
                         if nuevos:
                             for logro in nuevos:
                                 st.balloons()
