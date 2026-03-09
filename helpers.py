@@ -8,16 +8,22 @@ DATA_FILE = Path("data/usuarios.json")
 
 def cargar_usuarios():
     """Carga los usuarios desde el archivo JSON"""
-    if DATA_FILE.exists():
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+    try:
+        if DATA_FILE.exists():
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except:
+        pass
     return {}
 
 def guardar_usuarios(usuarios):
     """Guarda los usuarios en el archivo JSON"""
-    os.makedirs("data", exist_ok=True)
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(usuarios, f, indent=2, ensure_ascii=False)
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(usuarios, f, indent=2, ensure_ascii=False)
+    except:
+        pass
 
 def crear_usuario_si_no_existe(usuarios, nombre):
     """Crea un usuario si no existe"""
@@ -29,7 +35,13 @@ def crear_usuario_si_no_existe(usuarios, nombre):
             'ultima_conexion': datetime.now().strftime('%Y-%m-%d'),
             'logros': [],
             'historial': [],
-            'nivel': 1
+            'nivel': 1,
+            'estadisticas': {
+                'matematicas': 0,
+                'espanol': 0,
+                'geografia': 0,
+                'filosofia': 0
+            }
         }
         guardar_usuarios(usuarios)
     return usuarios[nombre]
@@ -50,18 +62,21 @@ def verificar_logros(usuario, datos):
     """Verifica y asigna nuevos logros"""
     nuevos_logros = []
     
+    # Logros por puntos
     if datos['puntos'] >= 100 and "🏆 100 Puntos" not in datos['logros']:
         nuevos_logros.append("🏆 100 Puntos")
     if datos['puntos'] >= 500 and "🏆 500 Puntos" not in datos['logros']:
         nuevos_logros.append("🏆 500 Puntos")
+    if datos['puntos'] >= 1000 and "🏆 1000 Puntos" not in datos['logros']:
+        nuevos_logros.append("🏆 1000 Puntos")
+    
+    # Logros por juegos
     if datos['juegos_completados'] >= 10 and "🎮 10 Juegos" not in datos['logros']:
         nuevos_logros.append("🎮 10 Juegos")
     if datos['juegos_completados'] >= 50 and "🎮 50 Juegos" not in datos['logros']:
         nuevos_logros.append("🎮 50 Juegos")
-    if datos['estadisticas'].get('filosofia', 0) >= 30 and "🤔 Sabio Filosófico" not in datos['logros']:
-    nuevos_logros.append("🤔 Sabio Filosófico")
-    if datos['estadisticas'].get('espanol', 0) >= 30 and "📚 Maestro del Español" not in datos['logros']:
-    nuevos_logros.append("📚 Maestro del Español")
+    if datos['juegos_completados'] >= 100 and "🎮 100 Juegos" not in datos['logros']:
+        nuevos_logros.append("🎮 100 Juegos")
     
     datos['logros'].extend(nuevos_logros)
     return nuevos_logros
