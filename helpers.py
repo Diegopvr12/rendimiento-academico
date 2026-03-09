@@ -58,6 +58,11 @@ def verificar_logros(usuario, datos):
         nuevos_logros.append("🎮 10 Juegos")
     if datos['juegos_completados'] >= 50 and "🎮 50 Juegos" not in datos['logros']:
         nuevos_logros.append("🎮 50 Juegos")
+        # Logros por especialización
+if datos['estadisticas'].get('filosofia', 0) >= 30 and "🤔 Sabio Filosófico" not in datos['logros']:
+    nuevos_logros.append("🤔 Sabio Filosófico")
+if datos['estadisticas'].get('espanol', 0) >= 30 and "📚 Maestro del Español" not in datos['logros']:
+    nuevos_logros.append("📚 Maestro del Español")
     
     datos['logros'].extend(nuevos_logros)
     return nuevos_logros
