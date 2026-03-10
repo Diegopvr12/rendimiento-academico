@@ -29,7 +29,7 @@ class JuegoMatematicas:
         self.generar_pregunta()
     
     def generar_pregunta(self):
-        """Genera una nueva pregunta"""
+        """Genera una nueva pregunta con 4 opciones"""
         operador = random.choice(['+', '-', '×'])
         
         if operador == '+':
@@ -40,17 +40,26 @@ class JuegoMatematicas:
             num1 = random.randint(5, 20)
             num2 = random.randint(1, num1)
             resultado = num1 - num2
-        else:
+        else:  # ×
             num1 = random.randint(2, 10)
             num2 = random.randint(2, 10)
             resultado = num1 * num2
         
-        # Generar opciones
+        # Generar 4 opciones SIEMPRE
         opciones = [resultado]
+        
+        # Generar 3 opciones incorrectas variadas
         while len(opciones) < 4:
-            op = resultado + random.randint(-5, 5)
-            if op not in opciones and op > 0:
-                opciones.append(op)
+            if operador in ['+', '-']:
+                # Para suma y resta, variar entre -3 y +3
+                incorrecta = resultado + random.randint(-3, 3)
+            else:
+                # Para multiplicación, variar entre -5 y +5
+                incorrecta = resultado + random.randint(-5, 5)
+            
+            # Asegurar que sea positiva y no se repita
+            if incorrecta > 0 and incorrecta not in opciones:
+                opciones.append(incorrecta)
         
         random.shuffle(opciones)
         
@@ -65,9 +74,12 @@ class JuegoMatematicas:
         }
     
     def jugar(self):
+        st.markdown("### 🧮 Matemáticas Rápidas")
+        st.caption("Pon a prueba tu agilidad mental")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Puntos en partida", st.session_state.math_puntos)
+            st.metric("Puntos", st.session_state.math_puntos)
         with col2:
             if st.session_state.math_preguntas > 0:
                 precision = (st.session_state.math_aciertos / st.session_state.math_preguntas) * 100
@@ -81,30 +93,35 @@ class JuegoMatematicas:
             else:
                 st.error(st.session_state.math_estado['mensaje'])
         
+        # Mostrar pregunta
         num1 = st.session_state.math_estado['num1']
         num2 = st.session_state.math_estado['num2']
         operador = st.session_state.math_estado['operador']
         
         st.markdown(f"## **{num1} {operador} {num2} = ?**")
         
+        # Mostrar 4 opciones en 2 columnas
         col1, col2 = st.columns(2)
         opciones = st.session_state.math_estado['opciones']
         respondido = st.session_state.math_estado['respondido']
         
-        with col1:
-            if st.button(f"**{opciones[0]}**", key="math_1", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[0])
+        # Asegurar que hay 4 opciones
+        if len(opciones) == 4:
+            with col1:
+                if st.button(f"**{opciones[0]}**", key="math_1", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[0])
+                
+                if st.button(f"**{opciones[1]}**", key="math_2", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[1])
             
-            if st.button(f"**{opciones[1]}**", key="math_2", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[1])
+            with col2:
+                if st.button(f"**{opciones[2]}**", key="math_3", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[2])
+                
+                if st.button(f"**{opciones[3]}**", key="math_4", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[3])
         
-        with col2:
-            if st.button(f"**{opciones[2]}**", key="math_3", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[2])
-            
-            if st.button(f"**{opciones[3]}**", key="math_4", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[3])
-        
+        # Botón siguiente pregunta
         if st.session_state.math_estado['respondido']:
             if st.button("➡️ Siguiente Pregunta", key="math_next", use_container_width=True):
                 self.generar_pregunta()
@@ -182,6 +199,16 @@ class JuegoEspanol:
                 'pregunta': '¿Qué palabra es un adjetivo?',
                 'opciones': ['Hermoso', 'Correr', 'Casa', 'Rápidamente'],
                 'correcta': 'Hermoso'
+            },
+            {
+                'pregunta': '¿Cuál es el sinónimo de "bello"?',
+                'opciones': ['Hermoso', 'Feo', 'Grande', 'Pequeño'],
+                'correcta': 'Hermoso'
+            },
+            {
+                'pregunta': '¿Qué es un artículo?',
+                'opciones': ['El, la, los, las', 'Correr, saltar', 'Grande, pequeño', 'Casa, perro'],
+                'correcta': 'El, la, los, las'
             }
         ]
         
@@ -198,6 +225,9 @@ class JuegoEspanol:
         }
     
     def jugar(self):
+        st.markdown("### 📚 Español")
+        st.caption("Pon a prueba tu conocimiento del idioma")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.esp_puntos)
@@ -216,23 +246,25 @@ class JuegoEspanol:
         
         st.markdown(f"### {st.session_state.esp_estado['pregunta']}")
         
+        # Mostrar 4 opciones en 2 columnas
         col1, col2 = st.columns(2)
         opciones = st.session_state.esp_estado['opciones']
         respondido = st.session_state.esp_estado['respondido']
         
-        with col1:
-            if st.button(opciones[0], key="esp_1", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[0])
+        if len(opciones) == 4:
+            with col1:
+                if st.button(opciones[0], key="esp_1", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[0])
+                
+                if st.button(opciones[1], key="esp_2", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[1])
             
-            if st.button(opciones[1], key="esp_2", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[1])
-        
-        with col2:
-            if st.button(opciones[2], key="esp_3", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[2])
-            
-            if st.button(opciones[3], key="esp_4", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[3])
+            with col2:
+                if st.button(opciones[2], key="esp_3", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[2])
+                
+                if st.button(opciones[3], key="esp_4", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[3])
         
         if st.session_state.esp_estado['respondido']:
             if st.button("➡️ Siguiente Pregunta", key="esp_next", use_container_width=True):
@@ -294,7 +326,13 @@ class JuegoGeografia:
             'Argentina': 'Buenos Aires',
             'Colombia': 'Bogotá',
             'Perú': 'Lima',
-            'Chile': 'Santiago'
+            'Chile': 'Santiago',
+            'Venezuela': 'Caracas',
+            'Uruguay': 'Montevideo',
+            'Paraguay': 'Asunción',
+            'Bolivia': 'Sucre',
+            'Ecuador': 'Quito',
+            'Portugal': 'Lisboa'
         }
         
         self.generar_pregunta()
@@ -303,7 +341,10 @@ class JuegoGeografia:
         pais = random.choice(list(self.capitales.keys()))
         capital = self.capitales[pais]
         
-        otras = random.sample([c for p, c in self.capitales.items() if p != pais], 3)
+        # Seleccionar 3 capitales incorrectas aleatorias
+        otras_capitales = [c for p, c in self.capitales.items() if p != pais]
+        otras = random.sample(otras_capitales, 3)
+        
         opciones = [capital] + otras
         random.shuffle(opciones)
         
@@ -316,6 +357,9 @@ class JuegoGeografia:
         }
     
     def jugar(self):
+        st.markdown("### 🌍 Geografía")
+        st.caption("Adivina las capitales del mundo")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.geo_puntos)
@@ -334,23 +378,25 @@ class JuegoGeografia:
         
         st.markdown(f"### ¿Cuál es la capital de **{st.session_state.geo_estado['pais']}**?")
         
+        # Mostrar 4 opciones en 2 columnas
         col1, col2 = st.columns(2)
         opciones = st.session_state.geo_estado['opciones']
         respondido = st.session_state.geo_estado['respondido']
         
-        with col1:
-            if st.button(opciones[0], key="geo_1", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[0])
+        if len(opciones) == 4:
+            with col1:
+                if st.button(opciones[0], key="geo_1", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[0])
+                
+                if st.button(opciones[1], key="geo_2", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[1])
             
-            if st.button(opciones[1], key="geo_2", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[1])
-        
-        with col2:
-            if st.button(opciones[2], key="geo_3", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[2])
-            
-            if st.button(opciones[3], key="geo_4", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[3])
+            with col2:
+                if st.button(opciones[2], key="geo_3", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[2])
+                
+                if st.button(opciones[3], key="geo_4", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[3])
         
         if st.session_state.geo_estado['respondido']:
             if st.button("➡️ Siguiente País", key="geo_next", use_container_width=True):
@@ -368,7 +414,7 @@ class JuegoGeografia:
             st.session_state.geo_estado['mensaje'] = "✅ ¡Correcto! +20 puntos"
             st.balloons()
         else:
-            st.session_state.geo_estado['mensaje'] = f"❌ Incorrecto. La capital es {st.session_state.geo_estado['capital']}"
+            st.session_state.geo_estado['mensaje'] = f"❌ Incorrecto. La capital de {st.session_state.geo_estado['pais']} es {st.session_state.geo_estado['capital']}"
         
         st.session_state.geo_estado['respondido'] = True
         st.rerun()
@@ -416,9 +462,9 @@ class JuegoHistoria:
                 'correcta': '1939'
             },
             {
-                'pregunta': '¿Quién fue el líder de la Revolución Mexicana?',
-                'opciones': ['Francisco I. Madero', 'Emiliano Zapata', 'Pancho Villa', 'Todos ellos'],
-                'correcta': 'Todos ellos'
+                'pregunta': '¿Quiénes lideraron la Revolución Mexicana?',
+                'opciones': ['Madero, Zapata y Villa', 'Hidalgo y Morelos', 'Juárez y Díaz', 'Carranza y Obregón'],
+                'correcta': 'Madero, Zapata y Villa'
             },
             {
                 'pregunta': '¿Qué imperio estaba liderado por Moctezuma?',
@@ -466,9 +512,14 @@ class JuegoHistoria:
                 'correcta': '1989'
             },
             {
-                'pregunta': '¿Quién fue el "Padre de la Patria" en México?',
+                'pregunta': '¿Quién es considerado el "Padre de la Patria" en México?',
                 'opciones': ['Miguel Hidalgo', 'José María Morelos', 'Vicente Guerrero', 'Agustín de Iturbide'],
                 'correcta': 'Miguel Hidalgo'
+            },
+            {
+                'pregunta': '¿Qué civilización desarrolló el calendario maya?',
+                'opciones': ['Maya', 'Azteca', 'Inca', 'Olmeca'],
+                'correcta': 'Maya'
             }
         ]
         
@@ -485,6 +536,9 @@ class JuegoHistoria:
         }
     
     def jugar(self):
+        st.markdown("### 📜 Historia")
+        st.caption("Viaja a través del tiempo")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.hist_puntos)
@@ -503,23 +557,25 @@ class JuegoHistoria:
         
         st.markdown(f"### {st.session_state.hist_estado['pregunta']}")
         
+        # Mostrar 4 opciones en 2 columnas
         col1, col2 = st.columns(2)
         opciones = st.session_state.hist_estado['opciones']
         respondido = st.session_state.hist_estado['respondido']
         
-        with col1:
-            if st.button(opciones[0], key="hist_1", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[0])
+        if len(opciones) == 4:
+            with col1:
+                if st.button(opciones[0], key="hist_1", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[0])
+                
+                if st.button(opciones[1], key="hist_2", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[1])
             
-            if st.button(opciones[1], key="hist_2", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[1])
-        
-        with col2:
-            if st.button(opciones[2], key="hist_3", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[2])
-            
-            if st.button(opciones[3], key="hist_4", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[3])
+            with col2:
+                if st.button(opciones[2], key="hist_3", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[2])
+                
+                if st.button(opciones[3], key="hist_4", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[3])
         
         if st.session_state.hist_estado['respondido']:
             if st.button("➡️ Siguiente Pregunta", key="hist_next", use_container_width=True):
@@ -598,6 +654,16 @@ class JuegoFilosofia:
                 'pregunta': '¿Qué es el "imperativo categórico" en Kant?',
                 'opciones': ['Regla moral universal', 'Ley física', 'Tipo de gobierno', 'Teoría del conocimiento'],
                 'correcta': 'Regla moral universal'
+            },
+            {
+                'pregunta': '¿Qué filósofo dijo "Solo sé que nada sé"?',
+                'opciones': ['Sócrates', 'Platón', 'Aristóteles', 'Descartes'],
+                'correcta': 'Sócrates'
+            },
+            {
+                'pregunta': '¿Quién escribió "El contrato social"?',
+                'opciones': ['Rousseau', 'Voltaire', 'Montesquieu', 'Hobbes'],
+                'correcta': 'Rousseau'
             }
         ]
         
@@ -614,6 +680,9 @@ class JuegoFilosofia:
         }
     
     def jugar(self):
+        st.markdown("### 🤔 Filosofía")
+        st.caption("Explora el mundo de las ideas")
+        
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Puntos", st.session_state.fil_puntos)
@@ -632,23 +701,25 @@ class JuegoFilosofia:
         
         st.markdown(f"### {st.session_state.fil_estado['pregunta']}")
         
+        # Mostrar 4 opciones en 2 columnas
         col1, col2 = st.columns(2)
         opciones = st.session_state.fil_estado['opciones']
         respondido = st.session_state.fil_estado['respondido']
         
-        with col1:
-            if st.button(opciones[0], key="fil_1", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[0])
+        if len(opciones) == 4:
+            with col1:
+                if st.button(opciones[0], key="fil_1", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[0])
+                
+                if st.button(opciones[1], key="fil_2", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[1])
             
-            if st.button(opciones[1], key="fil_2", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[1])
-        
-        with col2:
-            if st.button(opciones[2], key="fil_3", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[2])
-            
-            if st.button(opciones[3], key="fil_4", use_container_width=True, disabled=respondido):
-                self.verificar_respuesta(opciones[3])
+            with col2:
+                if st.button(opciones[2], key="fil_3", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[2])
+                
+                if st.button(opciones[3], key="fil_4", use_container_width=True, disabled=respondido):
+                    self.verificar_respuesta(opciones[3])
         
         if st.session_state.fil_estado['respondido']:
             if st.button("➡️ Siguiente Pregunta", key="fil_next", use_container_width=True):
